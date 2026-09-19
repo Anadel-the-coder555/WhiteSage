@@ -117,8 +117,8 @@ body {
 /* settings toggle button */
 #toggleSettingsBar {
     position: fixed;
-    bottom: 600px;
-    right: 80px;
+    top: 75px;
+    right: 70px;
     background: #eaf5ed;
     cursor: pointer;
     z-index: 1001;
