@@ -1241,11 +1241,13 @@ async function deleteCustomDeck(id, btnEl) {
 // DECK LOGIC
 // =============================================================================
 
+// Switching decks keeps whatever is already placed on the table and the
+// current layoutIndex, so cards drawn from different decks can share one
+// reading — the layout's position cap (drawOrder.length) still applies
+// across all of them combined. Use refreshReading() to start over.
 function selectDeck(deckName) {
     currentDeckName = deckName;
     currentDeck     = [...deckConfig[deckName].cards];
-    layoutIndex     = 0;
-    document.getElementById("table").innerHTML = "";
     createDeck();
 }
 
