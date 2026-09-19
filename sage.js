@@ -1244,6 +1244,8 @@ async function deleteCustomDeck(id, btnEl) {
 function selectDeck(deckName) {
     currentDeckName = deckName;
     currentDeck     = [...deckConfig[deckName].cards];
+    layoutIndex     = 0;
+    document.getElementById("table").innerHTML = "";
     createDeck();
 }
 
@@ -1278,9 +1280,9 @@ function createDeck() {
         let cardBack = existingChildren[index];
         if (!cardBack) {
             cardBack = document.createElement("div");
-            cardBack.onclick = () => drawCard(cardBack, card, currentDeckName);
             fragment.appendChild(cardBack);
         }
+        cardBack.onclick = () => drawCard(cardBack, card, currentDeckName);
 
         const isCircular = deckConfigEntry.circular;
         cardBack.className = "deckCard" + (isCircular ? " circular" : "");
