@@ -208,53 +208,100 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const BG_CATEGORIES = {
 
-    animals: [
-        { file: "background74.png",   label: "Default" },
-        { file: "background1.jpeg",   label: "Ladybug" },
-        { file: "background2.jpeg", label: "Mouse" },
-        { file: "background3.jpeg", label: "Fox" },
+    caves: [
+        { file: "background.jpg",   label: "Default" },
+        { file: "background23.jpeg",   label: "Slot Canyon 1" },
+        { file: "background51.jpg", label: "Slot Canyon 2" },
+        { file: "background56.jpg", label: "Slot Canyon 3" },
 
     ],
 
-    mystical: [
-        { file: "background4.jpeg", label: "Dragon" },
-        { file: "background18.jpeg", label: "Dragon 2" },
-        { file: "background5.jpeg", label: "Castle"},
-        { file: "background6.jpeg", label: "Winter Cave" },
-        { file: "background7.jpeg", label: "Lanterns" },
+    floral: [
+        { file: "background20.jpeg", label: "Pink Blossoms" },
+        { file: "background21.jpeg", label: "Pink Blossoms 2" },
+        { file: "background22.jpeg", label: "Blossoms Study" },
+        { file: "background11.jpeg", label: "Yellow Blossoms" },
+        { file: "background16.jpeg", label: "Hot Pink Blossoms" },
+        { file: "background18.jpeg", label: "Lavender"},
+        { file: "background10.jpeg", label: "Purple Flowers" },
+        { file: "background17.jpeg", label: "Pink Wildflowers" },
+        { file: "background10.jpeg", label: "Yellow Wildflowers" },
+        { file: "background15.jpeg", label: "Orange Flowers" },
+        { file: "background14.jpeg", label: "Pink and Orange Wildflowers" },
+        { file: "background107.jpeg", label: "Pink Peony" },
+        { file: "background127.png", label: "Woman In Spring Office"},
     ],
 
     marble: [
-        { file: "background8.jpeg", label: "Blue waves" },
-        { file: "background9.jpeg", label: "Black"},
+        { file: "background73.jpeg", label: "White Marble" },
+        { file: "background89.jpeg", label: "White Marble 2" },
+        { file: "background91.jpeg", label: "White Marble 3" },
+        { file: "background323.jpeg", label: "Pink Marble" },
+        { file: "background325.jpeg", label: "Pink Marble 2" },
+        { file: "background424.jpeg", label: "Pink Marble 3" },
+        { file: "background86.jpeg", label: "Black Marble"},
         
     ],
 
     stone: [
-        { file: "background10.jpeg", label: "Blue Stones"},
-        { file: "background11.jpeg", label: "Mossy Rock"},
-        { file: "background12.jpeg", label: "Glowing Stones"},
+        { file: "background4.jpg", label: "Stone Henge"},
+        { file: "background120.jpeg", label: "Balancing Stones"},
+        { file: "background124.jpeg", label: "Blue Stones"},
+        { file: "background114.jpeg", label: "Mossy Rock" },
     ],
 
-    forest: [
-        { file: "background16.jpeg", label: "Acorns" },
+    mystical: [
+        { file: "background24.png", label: "Knight"},
+        { file: "background41.jpeg", label: "Snow Globe"},
+        { file: "background7.jpeg", label: "Fairy Village"},
+        { file: "dragon2.jpg", label: "Dragon Meditation"},
+    ],
+
+    forestandleaves: [
+        { file: "background12.jpeg", label: "Christmas Forest" },
+        { file: "background32.jpeg", label: "Summer Forest" },
+        { file: "background108.jpeg", label: "Autumn Leaves and Acorns" },
+        { file: "background550.jpeg", label: "Autumn Leaves and Acorns 2" },
+        { file: "background106.jpeg", label: "Suculants" },
+        { file: "background47.jpeg", label: "Mushrooms"},
         
     ],
 
-    ocean: [
-        { file: "background13.jpeg",  label: "Ocean" },
-        { file: "background14.jpeg", label: "Ocean 2" },
-        { file: "background15.jpeg", label: "Ocean 3"},
+    animals: [
+        { file: "background8.jpg", label: "Reindeer" },
+        { file: "background9.jpg", label: "Highland Cow" },
+        { file: "background30.jpeg", label: "Sheep" },
     ],
+
+    lakesandrivers: [
+        { file: "background35.jpeg", label: "Mountain and Flowers"},
+        { file: "background36.jpeg", label: "Dreamy Lake"},
+        { file: "background39.jpeg", label: "Autumn River"},
+        { file: "background2.jpeg", label: "Mystical Lake"},
+    ],
+
+    ocean: [
+        { file: "background3.jpeg",  label: "Ocean Swing" },
+        { file: "background50.jpeg", label: "Sea Grass" },
+        { file: "background74.jpeg", label: "Sand"},
+        { file: "background75.jpeg", label: "Sand and Waves" },
+        { file: "ocean-shells2.jpg", label: "Shell 1" },
+        { file: "ocean-shells3.jpg", label: "Shell 2" },
+
+    ],
+
 };
 
 const CATEGORY_LABELS = {
-    animals:  "Animals",
-    mystical: "Mystical",
+    caves:  "Caves",
+    floral: "Floral",
     marble:    "Marble",
     stone:     "Stones",
-    forest:   "Forest",
-    ocean:    "Ocean & Sand",
+    mystical:  "Mystical",
+    forestandleaves:   "Forest & Leaves",
+    animals:  "Animals",
+    lakesandrivers: "Lakes & Rivers",
+    ocean:    "Ocean",
 };
 
 const ALL_IMAGES = Object.values(BG_CATEGORIES).flat();
