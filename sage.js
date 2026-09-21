@@ -223,7 +223,7 @@ const BG_CATEGORIES = {
         { file: "background11.jpeg", label: "Yellow Blossoms" },
         { file: "background16.jpeg", label: "Hot Pink Blossoms" },
         { file: "background18.jpeg", label: "Lavender"},
-        { file: "background10.jpeg", label: "Purple Flowers" },
+        { file: "background13.jpeg", label: "Purple Flowers" },
         { file: "background17.jpeg", label: "Pink Wildflowers" },
         { file: "background10.jpeg", label: "Yellow Wildflowers" },
         { file: "background15.jpeg", label: "Orange Flowers" },
