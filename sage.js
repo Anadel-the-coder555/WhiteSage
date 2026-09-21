@@ -117,13 +117,18 @@ const layouts = {
     },
     vformation: {
         cardSize: { width: '120px', height: '200px' },
-        1: { x: '8%',  y: '8%'  },  // 1 – left tip
-        2: { x: '24%', y: '28%' },  // 2
-        3: { x: '38%', y: '52%' },  // 3
+        // Same V, scaled in toward the center x (50%) by 0.6 — the tips
+        // used to sit right in the corners at 8%/92%, exactly where the
+        // deck bar's toggle and the settings button live. Whole shape then
+        // shifted down 6% (y only) to clear the Refresh Reading button —
+        // every gap between cards is unchanged, just translated down.
+        1: { x: '25%', y: '14%' },  // 1 – left tip
+        2: { x: '34%', y: '34%' },  // 2
+        3: { x: '43%', y: '58%' },  // 3
         4: { x: '50%', y: '85%' },  // 4 – bottom point
-        5: { x: '62%', y: '52%' },  // 5
-        6: { x: '76%', y: '28%' },  // 6
-        7: { x: '92%', y: '8%'  },  // 7 – right tip
+        5: { x: '57%', y: '58%' },  // 5
+        6: { x: '66%', y: '34%' },  // 6
+        7: { x: '75%', y: '14%' },  // 7 – right tip
     },
 
     celtic: {
@@ -257,16 +262,16 @@ function fitDragonLayout() {
 
 // The draw pile (#deck) sits at a fixed spot by default (see its CSS
 // margin-top). A tall layout (3+ rows) — a custom one, or a built-in one
-// whose lowest row sits well below the others (dragon, circle, celtic) —
-// can reach further down than that default spot, so push the pile down to
-// clear the lowest row instead of shrinking cards to fit above it. Other
-// built-in layouts are hand-tuned against the pile's default CSS position
-// already, so leave them alone entirely.
+// whose lowest row sits well below the others (dragon, circle, celtic,
+// vformation) — can reach further down than that default spot, so push
+// the pile down to clear the lowest row instead of shrinking cards to fit
+// above it. Other built-in layouts are hand-tuned against the pile's
+// default CSS position already, so leave them alone entirely.
 function adjustDeckForLayout() {
     const deck = document.getElementById("deck");
     if (!deck) return;
 
-    if (currentLayout !== "custom" && currentLayout !== "dragon" && currentLayout !== "circle" && currentLayout !== "celtic") {
+    if (currentLayout !== "custom" && currentLayout !== "dragon" && currentLayout !== "circle" && currentLayout !== "celtic" && currentLayout !== "vformation") {
         deck.style.top       = "";
         deck.style.marginTop = "";
         return;
