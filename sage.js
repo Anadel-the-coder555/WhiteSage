@@ -84,23 +84,36 @@ const layouts = {
         6:  { x: '25%', y: '40%' },
         7:  { x: '15%', y: '30%' },
         8:  { x: '65%', y: '40%' },
-        9:  { x: '75%', y: '30%' },
-        10: { x: '45%', y: '60%' },
+        9:  { x: '45%', y: '60%' },
+        10: { x: '75%', y: '30%' },
     },
     circle: {
-        cardSize: { width: '80px', height: '130px' },
-        1: { x: '50%', y: '15%' },
-        2: { x: '83%', y: '31%' },
-        3: { x: '71%', y: '68%' },
-        4: { x: '29%', y: '68%' },
-        5: { x: '17%', y: '31%' },
+        cardSize: { width: '110px', height: '170px' },
+        // 5 points on a ring around a center card (6). The y-radius (37)
+        // is deliberately much bigger than the x-radius (24) — the table
+        // is wider than it is tall, so equalizing the two would look like
+        // a flat oval, not a circle. Checked by hand against a fairly
+        // small table (~900x600, well under most windows) so none of the
+        // 6 cards clip each other or the table edge; my previous pass
+        // only checked against a much roomier assumed table and that's
+        // why it overlapped for real.
+        1: { x: '50%', y: '17%' },
+        2: { x: '73%', y: '43%' },
+        3: { x: '64%', y: '84%' },
+        4: { x: '36%', y: '84%' },
+        5: { x: '27%', y: '43%' },
+        6: { x: '50%', y: '54%' },
     },
     slant: {
         cardSize: { width: '120px', height: '200px' },
-        1: { x: '20%', y: '20%' },
-        2: { x: '35%', y: '35%' },
-        3: { x: '50%', y: '50%' },
-        4: { x: '65%', y: '65%' },
+        // Card 1 shifted right so its left edge sits the same distance from
+        // the deck bar as the tarot layout's card 1 (which is wider, so it
+        // needs a bigger x% for the same edge position) — cards 2-4 shifted
+        // by the same +2% to keep the diagonal's spacing unchanged.
+        1: { x: '22%', y: '20%' },
+        2: { x: '37%', y: '35%' },
+        3: { x: '52%', y: '50%' },
+        4: { x: '67%', y: '65%' },
     },
     vformation: {
         cardSize: { width: '120px', height: '200px' },
@@ -132,7 +145,7 @@ const layouts = {
 const drawOrders = {
     tarot:  [1, 2, 3, 4, 5, 6, 7, 8],
     dragon: [4, 1, 3, 6, 2, 8, 7, 9, 5, 10],
-    circle: [1, 2, 3, 4, 5],
+    circle: [1, 2, 3, 4, 5, 6],
     slant: [1, 2, 3, 4],
     celtic: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     vformation: [1, 7, 2, 6, 3, 5, 4],
@@ -240,16 +253,17 @@ function fitDragonLayout() {
 }
 
 // The draw pile (#deck) sits at a fixed spot by default (see its CSS
-// margin-top). A tall layout (3+ rows) — a custom one, or the built-in
-// dragon rune spread — can reach further down than that default spot, so
-// push the pile down to clear the lowest row instead of shrinking cards to
-// fit above it. Other built-in layouts are hand-tuned against the pile's
-// default CSS position already, so leave them alone entirely.
+// margin-top). A tall layout (3+ rows) — a custom one, or a built-in one
+// whose lowest row sits well below the others (dragon, circle) — can reach
+// further down than that default spot, so push the pile down to clear the
+// lowest row instead of shrinking cards to fit above it. Other built-in
+// layouts are hand-tuned against the pile's default CSS position already,
+// so leave them alone entirely.
 function adjustDeckForLayout() {
     const deck = document.getElementById("deck");
     if (!deck) return;
 
-    if (currentLayout !== "custom" && currentLayout !== "dragon") {
+    if (currentLayout !== "custom" && currentLayout !== "dragon" && currentLayout !== "circle") {
         deck.style.top       = "";
         deck.style.marginTop = "";
         return;
