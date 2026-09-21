@@ -800,7 +800,8 @@ body {
   background: #94ac9f;
   border: 1px solid #f8f8f8;
   border-radius: 12px;
-  width: 580px;
+  width: 640px;
+  min-height: 600px;
   max-width: 95vw;
   max-height: 90vh;
   display: flex;
@@ -850,11 +851,13 @@ body {
 
 #customGrid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 5px;
   background: #bcd8c8;
   border-radius: 8px;
-  padding: 8px;
+  padding: 1rem;
+  width: 70%;
+  margin: 0 auto;
 }
 
 .customCell {

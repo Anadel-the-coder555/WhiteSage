@@ -499,22 +499,77 @@ function closeLayoutPicker() {
 // =============================================================================
 
 function saveCustomLayout(selectedCells) {
-    const GRID_COLS = 6;
-    const GRID_ROWS = 6;
+    // Only size/space the grid around the rows and columns the user
+    // actually used, not the full 6x6 picker grid.
+    const cellCols = selectedCells.map(cell => cell.c);
+    const cellRows = selectedCells.map(cell => cell.r);
+    const minC = Math.min(...cellCols), maxC = Math.max(...cellCols);
+    const minR = Math.min(...cellRows), maxR = Math.max(...cellRows);
+    const usedCols = maxC - minC + 1;
+    const usedRows = maxR - minR + 1;
 
-    // Reset custom layout
-    layouts.custom  = { cardSize: { width: '120px', height: '200px' } };
-    drawOrders.custom = [];
+    const table  = document.getElementById('table');
+    const rect   = table.getBoundingClientRect();
+    const tableW = rect.width  || window.innerWidth;
+    const tableH = rect.height || (window.innerHeight - 70);
+
+    // Size cards to the density of the chosen grid, the same idea the
+    // built-in "2x4" layout uses — few cells means big cards, a packed
+    // grid means smaller ones. Cap size to the gap BETWEEN adjacent rows/
+    // columns (not the space divided across all of them) so a sparse
+    // selection like a 2x4 block reaches the same full 200x300 size the
+    // built-in "2x4" layout uses, while a dense grid still shrinks enough
+    // to avoid overlap. MARGIN_PCT matches the ~25% edge margin the
+    // built-in "2x4" layout uses on both axes (its positions run 25%-76%
+    // horizontally and 25%-72% vertically).
+    const MARGIN_PCT = 25;
+    const usableW  = tableW * (100 - 2 * MARGIN_PCT) / 100;
+    const usableH  = tableH * (100 - 2 * MARGIN_PCT) / 100;
+    const pitchW   = usedCols > 1 ? usableW / (usedCols - 1) : usableW;
+    const pitchH   = usedRows > 1 ? usableH / (usedRows - 1) : usableH;
+    const maxCardW = Math.min(200, pitchW * 0.85);
+    const maxCardH = Math.min(300, pitchH * 0.85);
+
+    // Lock to the same 2:3 card ratio the "2x4" layout uses, sized to
+    // whichever dimension (rows or columns) is tighter.
+    let cardW, cardH;
+    if (maxCardW / maxCardH > 2 / 3) {
+        cardH = maxCardH;
+        cardW = cardH * (2 / 3);
+    } else {
+        cardW = maxCardW;
+        cardH = cardW * (3 / 2);
+    }
+    cardW = Math.max(60, Math.round(cardW));
+    cardH = Math.max(90, Math.round(cardH));
+
+    // Step columns/rows from the final (possibly capped) card size, not
+    // the pre-cap pitch above — otherwise a capped card leaves the grid
+    // spaced wider than the card actually needs. Anchor both axes to the
+    // same fixed MARGIN_PCT (rather than re-centering each axis around
+    // its own step) so row spacing follows the same "2x4" rule as column
+    // spacing instead of drifting wider on axes with fewer gaps. Since
+    // cardW/cardH never exceed pitchW/pitchH * 0.85, the resulting span
+    // can never push past the table from this margin.
+    const stepXPct = usedCols > 1 ? ((cardW / 0.85) / tableW) * 100 : 0;
+    const stepYPct = usedRows > 1 ? ((cardH / 0.85) / tableH) * 100 : 0;
+
+    layouts.custom     = { cardSize: { width: `${cardW}px`, height: `${cardH}px` } };
+    drawOrders.custom  = [];
 
     selectedCells.forEach((cell, i) => {
         const posNum = i + 1;
-        const xPct   = Math.round(10 + (cell.c / (GRID_COLS - 1)) * 80);
-        const yPct   = Math.round(10 + (cell.r / (GRID_ROWS - 1)) * 80);
+        const xPct = usedCols === 1
+            ? 50
+            : Math.round(MARGIN_PCT + (cell.c - minC) * stepXPct);
+        const yPct = usedRows === 1
+            ? 50
+            : Math.round(MARGIN_PCT + (cell.r - minR) * stepYPct);
 
         layouts.custom[posNum] = {
             x: `${xPct}%`,
             y: `${yPct}%`,
-            rotate: cell.rotate || 0,   // ← ADD THIS LINE
+            rotate: cell.rotate || 0,
         };
         drawOrders.custom.push(posNum);
     });
