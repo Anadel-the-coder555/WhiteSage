@@ -84,8 +84,8 @@ const layouts = {
         6:  { x: '25%', y: '40%' },
         7:  { x: '15%', y: '30%' },
         8:  { x: '65%', y: '40%' },
-        9:  { x: '45%', y: '60%' },
-        10: { x: '75%', y: '30%' },
+        9:  { x: '75%', y: '30%' },
+        10: { x: '45%', y: '60%' },
     },
     circle: {
         cardSize: { width: '110px', height: '170px' },
@@ -128,16 +128,19 @@ const layouts = {
 
     celtic: {
         cardSize: { width: '120px', height: '200px' },
+        // 1 and 2 (the crossing pair) are untouched. 3/4 pulled further
+        // still from center. 7-10 (the right-hand column) shifted up and
+        // given a little more breathing room between cards.
         1:  { x: '35%', y: '40%' },
         2:  { x: '35%', y: '40%', rotate: 90 },
-        3:  { x: '35%', y: '20%' },
-        4:  { x: '35%', y: '60%' },
+        3:  { x: '35%', y: '6%' },
+        4:  { x: '35%', y: '74%' },
         5:  { x: '15%', y: '40%' },
         6:  { x: '55%', y: '40%' },
-        7:  { x: '75%', y: '70%' },
-        8:  { x: '75%', y: '55%' },
-        9:  { x: '75%', y: '40%' },
-        10: { x: '75%', y: '25%' },
+        7:  { x: '75%', y: '86%' },
+        8:  { x: '75%', y: '59%' },
+        9:  { x: '75%', y: '32%' },
+        10: { x: '75%', y: '5%' },
 },
 
 };
@@ -254,16 +257,16 @@ function fitDragonLayout() {
 
 // The draw pile (#deck) sits at a fixed spot by default (see its CSS
 // margin-top). A tall layout (3+ rows) — a custom one, or a built-in one
-// whose lowest row sits well below the others (dragon, circle) — can reach
-// further down than that default spot, so push the pile down to clear the
-// lowest row instead of shrinking cards to fit above it. Other built-in
-// layouts are hand-tuned against the pile's default CSS position already,
-// so leave them alone entirely.
+// whose lowest row sits well below the others (dragon, circle, celtic) —
+// can reach further down than that default spot, so push the pile down to
+// clear the lowest row instead of shrinking cards to fit above it. Other
+// built-in layouts are hand-tuned against the pile's default CSS position
+// already, so leave them alone entirely.
 function adjustDeckForLayout() {
     const deck = document.getElementById("deck");
     if (!deck) return;
 
-    if (currentLayout !== "custom" && currentLayout !== "dragon" && currentLayout !== "circle") {
+    if (currentLayout !== "custom" && currentLayout !== "dragon" && currentLayout !== "circle" && currentLayout !== "celtic") {
         deck.style.top       = "";
         deck.style.marginTop = "";
         return;
