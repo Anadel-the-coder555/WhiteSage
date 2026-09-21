@@ -257,17 +257,17 @@ function fitDragonLayout() {
 }
 
 // The draw pile (#deck) sits at a fixed spot by default (see its CSS
-// margin-top). A tall layout (3+ rows) — a custom one, or a built-in one
-// whose lowest row sits well below the others (dragon, circle, celtic,
-// vformation) — can reach further down than that default spot, so push
-// the pile down to clear the lowest row instead of shrinking cards to fit
-// above it. Other built-in layouts are hand-tuned against the pile's
-// default CSS position already, so leave them alone entirely.
+// margin-top), which assumes a particular table height. Rather than keep
+// guessing which layouts need a correction and by how much depending on
+// the screen, every layout now measures the table's ACTUAL rendered
+// height at runtime and clears the lowest row with a buffer — so this is
+// correct by construction on any screen, not just the ones it's been
+// tested on.
 function adjustDeckForLayout() {
     const deck = document.getElementById("deck");
     if (!deck) return;
 
-    if (currentLayout !== "custom" && currentLayout !== "dragon" && currentLayout !== "circle" && currentLayout !== "celtic" && currentLayout !== "vformation") {
+    if (!layouts[currentLayout]) {
         deck.style.top       = "";
         deck.style.marginTop = "";
         return;
