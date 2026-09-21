@@ -262,6 +262,7 @@ const BG_CATEGORIES = {
         { file: "background32.jpeg", label: "Summer Forest" },
         { file: "background108.jpeg", label: "Autumn Leaves and Acorns" },
         { file: "background550.jpeg", label: "Autumn Leaves and Acorns 2" },
+        { file: "background600.jpeg", label: "Pumpkins and Leaves" },
         { file: "background106.jpeg", label: "Suculants" },
         { file: "background47.jpeg", label: "Mushrooms"},
         
