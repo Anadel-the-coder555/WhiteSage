@@ -292,7 +292,7 @@ const deckPagerControls = document.getElementById("deckPagerControls");
 
 // Decks are shown 2-per-row, one page at a time per tab, so a deck bar with
 // many decks doesn't turn into an endless scroll.
-const DECKS_PER_PAGE = 10;
+const DECKS_PER_PAGE = 6;
 const deckPage = { tarot: 0, oracle: 0 };
 
 function updateDeckPagination() {
