@@ -88,15 +88,11 @@ const layouts = {
         10: { x: '45%', y: '60%' },
     },
     circle: {
-        cardSize: { width: '110px', height: '170px' },
-        // 5 points on a ring around a center card (6). The y-radius (37)
-        // is deliberately much bigger than the x-radius (24) — the table
-        // is wider than it is tall, so equalizing the two would look like
-        // a flat oval, not a circle. Checked by hand against a fairly
-        // small table (~900x600, well under most windows) so none of the
-        // 6 cards clip each other or the table edge; my previous pass
-        // only checked against a much roomier assumed table and that's
-        // why it overlapped for real.
+        cardSize: { width: '140px', height: '215px' },
+        // Positions unchanged (per request) — only the card size grew,
+        // about 27% bigger than before. The tightest pair here is the
+        // center card against the ring cards nearest it (1 and 6), so if
+        // this ever needs to grow further, that's the pair to check first.
         1: { x: '50%', y: '17%' },
         2: { x: '73%', y: '43%' },
         3: { x: '64%', y: '84%' },
