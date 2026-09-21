@@ -88,11 +88,11 @@ const layouts = {
         10: { x: '45%', y: '60%' },
     },
     circle: {
-        cardSize: { width: '140px', height: '215px' },
-        // Positions unchanged (per request) — only the card size grew,
-        // about 27% bigger than before. The tightest pair here is the
-        // center card against the ring cards nearest it (1 and 6), so if
-        // this ever needs to grow further, that's the pair to check first.
+        cardSize: { width: '160px', height: '245px' },
+        // Positions unchanged (per request) — card size bumped up again,
+        // about 14% bigger than before. The tightest pair is the center
+        // card against the ring cards nearest it, so that's the pair to
+        // check first if this needs to grow further.
         1: { x: '50%', y: '17%' },
         2: { x: '73%', y: '43%' },
         3: { x: '64%', y: '84%' },
@@ -304,10 +304,19 @@ function adjustDeckForLayout() {
 // the table's real height without re-running it, so the pile's position
 // goes stale — same layout, different gap. Recompute on resize so it
 // can't drift out of sync from what's actually on screen.
-let resizeAdjustTimer = null;
+//
+// Entering the browser's native fullscreen (the green button on Mac) is
+// itself an animated resize — it doesn't fire a distinct "done" event, so
+// a single quick recompute can land mid-animation and measure a table
+// height that isn't final yet. A second, later recompute catches the
+// settled size once the animation has actually finished.
+let resizeAdjustTimerQuick = null;
+let resizeAdjustTimerSettle = null;
 window.addEventListener("resize", () => {
-    clearTimeout(resizeAdjustTimer);
-    resizeAdjustTimer = setTimeout(adjustDeckForLayout, 150);
+    clearTimeout(resizeAdjustTimerQuick);
+    clearTimeout(resizeAdjustTimerSettle);
+    resizeAdjustTimerQuick   = setTimeout(adjustDeckForLayout, 150);
+    resizeAdjustTimerSettle  = setTimeout(adjustDeckForLayout, 600);
 });
 
 // =============================================================================
