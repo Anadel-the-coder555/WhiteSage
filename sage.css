@@ -260,7 +260,11 @@ body {
     top: 70px;
     left: 0;
     width: 100%;
-    height: calc(100vh - 70px);
+    /* Capped so row spacing (a % of this height) can't stretch past what the
+       fixed-size cards and the fixed-position draw pile below were tuned
+       for — past this cap, extra screen height is just left as margin
+       instead of blowing up the gaps between rows. */
+    height: min(calc(100vh - 70px), 850px);
     pointer-events: none;
 }
 
