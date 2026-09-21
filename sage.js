@@ -298,6 +298,18 @@ function adjustDeckForLayout() {
     deck.style.top = `${table.offsetTop + clearance}px`;
 }
 
+// adjustDeckForLayout() only ran when a layout was first chosen, using
+// whatever the table's height happened to be at that moment. Resizing the
+// window afterward (or the OS/browser adjusting available space) changes
+// the table's real height without re-running it, so the pile's position
+// goes stale — same layout, different gap. Recompute on resize so it
+// can't drift out of sync from what's actually on screen.
+let resizeAdjustTimer = null;
+window.addEventListener("resize", () => {
+    clearTimeout(resizeAdjustTimer);
+    resizeAdjustTimer = setTimeout(adjustDeckForLayout, 150);
+});
+
 // =============================================================================
 // UI — DECK SELECTOR BUTTONS + TAB TOGGLE
 // =============================================================================
