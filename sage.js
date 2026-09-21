@@ -73,16 +73,19 @@ const layouts = {
     },
     dragon: {
         cardSize: { width: '80px', height: '130px' },
-        1:  { x: '45%', y: '10%' },
-        2:  { x: '45%', y: '39%' },
+        // 1, 2, 10, 5 form the center spine (x45%), shifted up slightly
+        // from their old 10/39/67 spots to leave room for 5 as a 4th card
+        // underneath instead of off in its own column to the left.
+        1:  { x: '45%', y: '7%' },
+        2:  { x: '45%', y: '34%' },
         3:  { x: '55%', y: '15%' },
         4:  { x: '35%', y: '15%' },
-        5:  { x: '35%', y: '53%' },
+        5:  { x: '45%', y: '86%' },
         6:  { x: '25%', y: '40%' },
         7:  { x: '15%', y: '30%' },
         8:  { x: '65%', y: '40%' },
         9:  { x: '75%', y: '30%' },
-        10: { x: '45%', y: '67%' },
+        10: { x: '45%', y: '60%' },
     },
     circle: {
         cardSize: { width: '80px', height: '130px' },
@@ -237,16 +240,16 @@ function fitDragonLayout() {
 }
 
 // The draw pile (#deck) sits at a fixed spot by default (see its CSS
-// margin-top). A tall custom layout (3+ rows) can reach further down
-// than that default spot, so push the pile down to clear the lowest row
-// instead of shrinking cards to fit above it. Built-in layouts are
-// hand-tuned against the pile's default CSS position already, so leave
-// them alone entirely.
+// margin-top). A tall layout (3+ rows) — a custom one, or the built-in
+// dragon rune spread — can reach further down than that default spot, so
+// push the pile down to clear the lowest row instead of shrinking cards to
+// fit above it. Other built-in layouts are hand-tuned against the pile's
+// default CSS position already, so leave them alone entirely.
 function adjustDeckForLayout() {
     const deck = document.getElementById("deck");
     if (!deck) return;
 
-    if (currentLayout !== "custom") {
+    if (currentLayout !== "custom" && currentLayout !== "dragon") {
         deck.style.top       = "";
         deck.style.marginTop = "";
         return;
