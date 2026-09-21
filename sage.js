@@ -74,15 +74,15 @@ const layouts = {
     dragon: {
         cardSize: { width: '80px', height: '130px' },
         1:  { x: '45%', y: '10%' },
-        2:  { x: '45%', y: '40%' },
+        2:  { x: '45%', y: '39%' },
         3:  { x: '55%', y: '15%' },
         4:  { x: '35%', y: '15%' },
-        5:  { x: '45%', y: '60%' },
+        5:  { x: '35%', y: '53%' },
         6:  { x: '25%', y: '40%' },
         7:  { x: '15%', y: '30%' },
         8:  { x: '65%', y: '40%' },
         9:  { x: '75%', y: '30%' },
-        10: { x: '45%', y: '85%' },
+        10: { x: '45%', y: '67%' },
     },
     circle: {
         cardSize: { width: '80px', height: '130px' },
@@ -154,21 +154,180 @@ let drawOrder       = drawOrders.tarot;   // default draw order
 // =============================================================================
 
 function setLayout(name) {
+    if (name === "dragon") {
+        // This formation needs the full table width to size its cards up
+        // well, so claim it by collapsing the deck-selector panel (the
+        // settings panel already auto-collapses after a layout is chosen,
+        // via closeLayoutPicker()).
+        document.getElementById("deckSelector")?.classList.add("collapsed");
+        document.getElementById("toggleDeckBar")?.classList.add("collapsed");
+        fitDragonLayout();
+    }
     currentLayout = name;
     positions   = layouts[name];
     drawOrder   = drawOrders[name];
     layoutIndex = 0;
     document.getElementById("table").innerHTML = "";
     createDeck();
+    adjustDeckForLayout();
+}
+
+// The dragon rune layout's cards are small (80x130) by default. setLayout()
+// collapses the deck-selector panel and the settings panel auto-collapses
+// right after via closeLayoutPicker(), so both sit off-screen by the time
+// this is visible — size cards to fill the table's full width/height
+// (minus a small edge buffer), as large as possible without any two of
+// the 10 points' cards overlapping.
+const DRAGON_BASE = JSON.parse(JSON.stringify(layouts.dragon));
+
+function fitDragonLayout() {
+    const table = document.getElementById("table");
+    if (!table) return;
+    const tableRect = table.getBoundingClientRect();
+    const tableW = tableRect.width  || window.innerWidth;
+    const tableH = tableRect.height || (window.innerHeight - 70);
+
+    const BUFFER_PX  = 20;
+    const insetLeft  = BUFFER_PX;
+    const insetRight = tableW - BUFFER_PX;
+    const insetTop    = BUFFER_PX;
+    const insetBottom = tableH - BUFFER_PX;
+    const availW = Math.max(1, insetRight - insetLeft);
+    const availH = Math.max(1, insetBottom - insetTop);
+
+    const pointKeys = Object.keys(DRAGON_BASE).filter(key => key !== "cardSize");
+    const pxPoints = {};
+    pointKeys.forEach(key => {
+        const base = DRAGON_BASE[key];
+        pxPoints[key] = {
+            xPx: insetLeft + (parseFloat(base.x) / 100) * availW,
+            yPx: insetTop  + (parseFloat(base.y) / 100) * availH,
+            rotate: base.rotate || 0,
+        };
+    });
+
+    // Largest scale (relative to the base 80x130 size) at which no two
+    // points' card boxes overlap: for each pair, a scale is safe as long
+    // as EITHER axis keeps them apart, so the per-pair limit is
+    // max(dx/baseW, dy/baseH); the layout's limit is the tightest pair.
+    const baseW = DRAGON_BASE.cardSize && parseFloat(DRAGON_BASE.cardSize.width)  || 80;
+    const baseH = DRAGON_BASE.cardSize && parseFloat(DRAGON_BASE.cardSize.height) || 130;
+    let pairScale = Infinity;
+    for (let i = 0; i < pointKeys.length; i++) {
+        for (let j = i + 1; j < pointKeys.length; j++) {
+            const a = pxPoints[pointKeys[i]], b = pxPoints[pointKeys[j]];
+            const dx = Math.abs(a.xPx - b.xPx), dy = Math.abs(a.yPx - b.yPx);
+            pairScale = Math.min(pairScale, Math.max(dx / baseW, dy / baseH));
+        }
+    }
+    const GUTTER = 0.85; // leave breathing room between adjacent cards
+    const scale = Math.min(2.5, Math.max(0.5, pairScale * GUTTER));
+
+    layouts.dragon.cardSize = {
+        width:  `${Math.round(baseW * scale)}px`,
+        height: `${Math.round(baseH * scale)}px`,
+    };
+    pointKeys.forEach(key => {
+        layouts.dragon[key] = {
+            x: `${(pxPoints[key].xPx / tableW) * 100}%`,
+            y: `${(pxPoints[key].yPx / tableH) * 100}%`,
+            rotate: pxPoints[key].rotate,
+        };
+    });
+}
+
+// The draw pile (#deck) sits at a fixed spot by default (see its CSS
+// margin-top). A tall custom layout (3+ rows) can reach further down
+// than that default spot, so push the pile down to clear the lowest row
+// instead of shrinking cards to fit above it. Built-in layouts are
+// hand-tuned against the pile's default CSS position already, so leave
+// them alone entirely.
+function adjustDeckForLayout() {
+    const deck = document.getElementById("deck");
+    if (!deck) return;
+
+    if (currentLayout !== "custom") {
+        deck.style.top       = "";
+        deck.style.marginTop = "";
+        return;
+    }
+
+    const table = document.getElementById("table");
+    if (!table) return;
+
+    const size = layouts[currentLayout] && layouts[currentLayout].cardSize;
+    if (!size) return;
+
+    const tableH  = table.getBoundingClientRect().height || (window.innerHeight - 70);
+    const cardHPx = parseFloat(size.height) || 0;
+
+    let maxBottomPx = 0;
+    Object.keys(positions).forEach(key => {
+        const pos = positions[key];
+        if (!pos || typeof pos.y === "undefined") return;
+        const bottomPx = (parseFloat(pos.y) / 100) * tableH + cardHPx / 2;
+        if (bottomPx > maxBottomPx) maxBottomPx = bottomPx;
+    });
+
+    const DECK_DEFAULT_CLEARANCE_PX = 750; // matches the pile's original fixed position
+    const DECK_BUFFER_PX = 20;
+    const clearance = Math.max(DECK_DEFAULT_CLEARANCE_PX, maxBottomPx + DECK_BUFFER_PX);
+
+    deck.style.marginTop = "0px";
+    deck.style.top = `${table.offsetTop + clearance}px`;
 }
 
 // =============================================================================
 // UI — DECK SELECTOR BUTTONS + TAB TOGGLE
 // =============================================================================
 
-const deckSelector = document.getElementById("deckSelector");
+const deckSelector    = document.getElementById("deckSelector");
+const deckButtonGrid  = document.getElementById("deckButtonGrid");
+const deckPagerPrev   = document.getElementById("deckPagePrev");
+const deckPagerNext   = document.getElementById("deckPageNext");
+const deckPageIndicator = document.getElementById("deckPageIndicator");
+const deckPagerControls = document.getElementById("deckPagerControls");
 
 // Custom deck buttons are added dynamically by registerCustomDeck().
+
+// Decks are shown 2-per-row, one page at a time per tab, so a deck bar with
+// many decks doesn't turn into an endless scroll.
+const DECKS_PER_PAGE = 10;
+const deckPage = { tarot: 0, oracle: 0 };
+
+function updateDeckPagination() {
+    const type = activeDeckType;
+    const allButtons   = Array.from(deckButtonGrid.children);
+    const buttonsOfType = allButtons.filter(b => b.dataset.type === type);
+    const totalPages   = Math.max(1, Math.ceil(buttonsOfType.length / DECKS_PER_PAGE));
+
+    if (deckPage[type] >= totalPages) deckPage[type] = totalPages - 1;
+    if (deckPage[type] < 0) deckPage[type] = 0;
+    const page = deckPage[type];
+
+    allButtons.forEach(b => { b.style.display = "none"; });
+    buttonsOfType.forEach((b, i) => {
+        b.style.display = Math.floor(i / DECKS_PER_PAGE) === page ? "flex" : "none";
+    });
+
+    const showPager = buttonsOfType.length > DECKS_PER_PAGE;
+    deckPagerControls.style.display = showPager ? "flex" : "none";
+    if (showPager) {
+        deckPagerPrev.disabled = page === 0;
+        deckPagerNext.disabled = page >= totalPages - 1;
+        deckPageIndicator.textContent = `${page + 1} / ${totalPages}`;
+    }
+}
+
+deckPagerPrev.onclick = () => {
+    deckPage[activeDeckType]--;
+    updateDeckPagination();
+};
+
+deckPagerNext.onclick = () => {
+    deckPage[activeDeckType]++;
+    updateDeckPagination();
+};
 
 document.querySelectorAll(".deckTypeBtn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -179,9 +338,7 @@ document.querySelectorAll(".deckTypeBtn").forEach(btn => {
         document.querySelectorAll(".deckTypeBtn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
-        document.querySelectorAll(".deckButton").forEach(deckBtn => {
-            deckBtn.style.display = deckBtn.dataset.type === selectedType ? "flex" : "none";
-        });
+        updateDeckPagination();
     });
 });
 
@@ -513,44 +670,21 @@ function saveCustomLayout(selectedCells) {
     const tableW = rect.width  || window.innerWidth;
     const tableH = rect.height || (window.innerHeight - 70);
 
-    // Size cards to the density of the chosen grid, the same idea the
-    // built-in "2x4" layout uses — few cells means big cards, a packed
-    // grid means smaller ones. Cap size to the gap BETWEEN adjacent rows/
-    // columns (not the space divided across all of them) so a sparse
-    // selection like a 2x4 block reaches the same full 200x300 size the
-    // built-in "2x4" layout uses, while a dense grid still shrinks enough
-    // to avoid overlap. MARGIN_PCT matches the ~25% edge margin the
-    // built-in "2x4" layout uses on both axes (its positions run 25%-76%
-    // horizontally and 25%-72% vertically).
+    // Cards are always the built-in "2x4" layout's own fixed size —
+    // never shrunk for denser grids — so every custom layout looks and
+    // feels the same regardless of row/column count. If a tall layout
+    // reaches past the card deck pile below the table, adjustDeckForLayout()
+    // (called via setLayout() below) pushes the pile down to clear it
+    // instead.
+    const cardW = 200;
+    const cardH = 300;
+
+    // MARGIN_PCT matches the ~25% edge margin the built-in "2x4" layout
+    // uses on both axes (its positions run 25%-76% horizontally and
+    // 25%-72% vertically). Step is derived from the fixed card size with
+    // the same fill factor, so column/row spacing follows the same rule
+    // the "2x4" layout uses no matter how many rows or columns are used.
     const MARGIN_PCT = 25;
-    const usableW  = tableW * (100 - 2 * MARGIN_PCT) / 100;
-    const usableH  = tableH * (100 - 2 * MARGIN_PCT) / 100;
-    const pitchW   = usedCols > 1 ? usableW / (usedCols - 1) : usableW;
-    const pitchH   = usedRows > 1 ? usableH / (usedRows - 1) : usableH;
-    const maxCardW = Math.min(200, pitchW * 0.85);
-    const maxCardH = Math.min(300, pitchH * 0.85);
-
-    // Lock to the same 2:3 card ratio the "2x4" layout uses, sized to
-    // whichever dimension (rows or columns) is tighter.
-    let cardW, cardH;
-    if (maxCardW / maxCardH > 2 / 3) {
-        cardH = maxCardH;
-        cardW = cardH * (2 / 3);
-    } else {
-        cardW = maxCardW;
-        cardH = cardW * (3 / 2);
-    }
-    cardW = Math.max(60, Math.round(cardW));
-    cardH = Math.max(90, Math.round(cardH));
-
-    // Step columns/rows from the final (possibly capped) card size, not
-    // the pre-cap pitch above — otherwise a capped card leaves the grid
-    // spaced wider than the card actually needs. Anchor both axes to the
-    // same fixed MARGIN_PCT (rather than re-centering each axis around
-    // its own step) so row spacing follows the same "2x4" rule as column
-    // spacing instead of drifting wider on axes with fewer gaps. Since
-    // cardW/cardH never exceed pitchW/pitchH * 0.85, the resulting span
-    // can never push past the table from this margin.
     const stepXPct = usedCols > 1 ? ((cardW / 0.85) / tableW) * 100 : 0;
     const stepYPct = usedRows > 1 ? ((cardH / 0.85) / tableH) * 100 : 0;
 
@@ -1186,8 +1320,8 @@ function updateRegisteredCustomDeck(deckData) {
         btn.title = deckData.name;
         btn.dataset.type = deckData.type;
         btn.style.backgroundImage = `url('${deckData.cover}')`;
-        btn.style.display = deckData.type === activeDeckType ? 'flex' : 'none';
     }
+    updateDeckPagination();
 
     if (currentDeckName === deckData.id) {
         currentDeck = [...deckConfig[deckData.id].cards];
@@ -1317,9 +1451,9 @@ function addCustomDeckButton(deckData) {
     btn.dataset.type     = deckData.type;
     btn.dataset.customId = deckData.id;
     btn.style.backgroundImage = `url('${deckData.cover}')`;
-    if (deckData.type !== activeDeckType) btn.style.display = 'none';
     btn.onclick = () => selectDeck(deckData.id);
-    deckSelector.appendChild(btn);
+    deckButtonGrid.appendChild(btn);
+    updateDeckPagination();
 }
 
 async function deleteCustomDeck(id, btnEl) {
@@ -1333,6 +1467,7 @@ async function deleteCustomDeck(id, btnEl) {
 
     delete deckConfig[id];
     if (btnEl && btnEl.remove) btnEl.remove();
+    updateDeckPagination();
     if (currentDeckName === id) {
         currentDeckName = null;
         currentDeck = [];

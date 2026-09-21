@@ -19,12 +19,12 @@ body {
 
 /* side panel for deck selection */
 #deckSelector {
-    width:200px;
+    width:220px;
     padding:20px;
     box-sizing:border-box;
-    max-height: 90vh;       
-    overflow-y: overlay;       
-    transition: margin-left 0.3s ease; 
+    max-height: 90vh;
+    overflow-y: overlay;
+    transition: margin-left 0.3s ease;
 }
 
 #deckSelector h3 {
@@ -38,7 +38,7 @@ body {
 }
 
 #deckSelector.collapsed {
-    margin-left: -200px;
+    margin-left: -220px;
 }
 
 /* ---- Tarot / Oracle toggle tabs ---- */
@@ -165,6 +165,59 @@ body {
     height: 80px;
     background-size: 230%;        /* zoom in — increase this number to zoom more */
     background-position: center;
+}
+
+/* deck buttons flow 2-per-row inside the side panel */
+#deckButtonGrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 10px;
+}
+
+#deckButtonGrid .deckButton {
+    margin: 10px 0;
+}
+
+/* pager shown only when a tab has more than one page of decks */
+#deckPagerControls {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 6px;
+}
+
+#deckPagerControls button {
+    background: #aab6a0;
+    color: white;
+    border: 1px solid rgb(110, 111, 111);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+#deckPagerControls button:hover:not(:disabled) {
+    background: #557367;
+}
+
+#deckPagerControls button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+#deckPageIndicator {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.7);
+    min-width: 36px;
+    text-align: center;
 }
 
 
@@ -1044,6 +1097,7 @@ body {
 body.theme-dark #deckSelector h3,
 body.theme-dark .deckTypeBtn,
 body.theme-dark .deckButton,
+body.theme-dark #deckPageIndicator,
 body.theme-dark #toggleDeckBar,
 body.theme-dark #buttonBar button,
 body.theme-dark #settingsBar,
@@ -1057,6 +1111,7 @@ body.theme-dark #settingsBar label {
 body.theme-light #deckSelector h3,
 body.theme-light .deckTypeBtn,
 body.theme-light .deckButton,
+body.theme-light #deckPageIndicator,
 body.theme-light #toggleDeckBar,
 body.theme-light #buttonBar button,
 body.theme-light #settingsBar,
